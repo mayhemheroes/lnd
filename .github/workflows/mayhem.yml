@@ -47,27 +47,19 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Start analysis for init
-        uses: ForAllSecure/mcode-action@v1
+        uses: forallsecure/mcode-action@long-runs
         with:
           mayhem-token: ${{ secrets.MAYHEM_TOKEN }}
           args: --image ${{ steps.meta.outputs.tags }} --file mayhem/init.mayhemfile --duration 300
-          sarif-output: sarif
 
       - name: Start analysis for open_channel
-        uses: ForAllSecure/mcode-action@v1
+        uses: forallsecure/mcode-action@long-runs
         with:
           mayhem-token: ${{ secrets.MAYHEM_TOKEN }}
           args: --image ${{ steps.meta.outputs.tags }} --file mayhem/open_channel.mayhemfile --duration 300
-          sarif-output: sarif
 
       - name: Start analysis for shutdown
-        uses: ForAllSecure/mcode-action@v1
+        uses: forallsecure/mcode-action@long-runs
         with:
           mayhem-token: ${{ secrets.MAYHEM_TOKEN }}
           args: --image ${{ steps.meta.outputs.tags }} --file mayhem/shutdown.mayhemfile --duration 300
-          sarif-output: sarif
-
-      - name: Upload SARIF file(s)
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: sarif
