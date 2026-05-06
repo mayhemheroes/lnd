@@ -15,7 +15,7 @@
 ################################################################################
 
 # Pull the oss-fuzz base image
-FROM gcr.io/oss-fuzz-base/base-builder-go as builder
+FROM gcr.io/oss-fuzz-base/base-builder-go AS builder
 
 # Push the code into the container
 COPY . lnd
@@ -26,11 +26,16 @@ RUN rm -rf lnd/mayhem
 # Install the build script
 COPY mayhem/build.sh $SRC/
 
-# Set the directory to '$SRC/lnd'
+# Set the directory to /lnd
 WORKDIR $SRC/lnd
 
+# Add go-118-fuzz-build dependency required by compile_native_go_fuzzer
+# and refresh go.sum so all transitive deps are accounted for
+RUN go get github.com/AdamKorcz/go-118-fuzz-build@latest \
+    && GONOSUMDB=* GOFLAGS=-mod=mod go mod download all
+
 # Setup the environment & compile the program
-ENV FUZZING_LANGUAGE=go SANITIZER=address
+ENV FUZZING_LANGUAGE=go SANITIZER=address GONOSUMDB=* GOFLAGS=-mod=mod
 RUN compile
 
 # Move to clean ubuntu container
